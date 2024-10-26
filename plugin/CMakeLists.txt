@@ -1,10 +1,20 @@
 juce_add_plugin(JuceWebViewPlugin
+    COMPANY_NAME YMO
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     PLUGIN_MANUFACTURER_CODE Ymoo
     PLUGIN_CODE Ywvp
     FORMATS AU VST3 Standalone
+)
+
+get_target_property(PRODUCT_NAME JuceWebViewPlugin JUCE_PRODUCT_NAME)
+get_target_property(COMPANY_NAME JuceWebViewPlugin JUCE_COMPANY_NAME)
+target_compile_definitions(JuceWebViewPlugin
+  PRIVATE
+    JUCE_PRODUCT_NAME="${PRODUCT_NAME}"
+    JUCE_COMPANY_NAME="${COMPANY_NAME}"
+    JUCE_PLUGIN_VERSION="${PROJECT_VERSION}"
 )
 
 target_sources(JuceWebViewPlugin
