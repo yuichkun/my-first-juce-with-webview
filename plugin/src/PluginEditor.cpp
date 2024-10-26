@@ -55,6 +55,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(
 
     addAndMakeVisible(webView);
     addAndMakeVisible(runJavaScriptButton);
+    addAndMakeVisible(emitJavaScriptEventButton);
+
+    emitJavaScriptEventButton.onClick = [this]() {
+        static const juce::Identifier EVENT_ID{"exampleEvent"};
+        webView.emitEventIfBrowserIsVisible(EVENT_ID, 42.0);
+    };
 
     webView.goToURL(webView.getResourceProviderRoot());
 
@@ -89,6 +95,7 @@ void AudioPluginAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
     webView.setBounds(bounds.removeFromRight(getWidth() / 2));
     runJavaScriptButton.setBounds(bounds.removeFromTop(50).reduced(5));
+    emitJavaScriptEventButton.setBounds(bounds.removeFromTop(50).reduced(5));
 }
 
 auto AudioPluginAudioProcessorEditor::getResource(const juce::String& url) -> std::optional<Resource> {

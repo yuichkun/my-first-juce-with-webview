@@ -23,6 +23,7 @@ private:
     AudioPluginAudioProcessor& processorRef;
 
     juce::TextButton runJavaScriptButton{"Run JavaScript"};
+    juce::TextButton emitJavaScriptEventButton{"Emit JavaScript Event"};
 
     juce::WebBrowserComponent webView;
 
