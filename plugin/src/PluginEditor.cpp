@@ -48,13 +48,32 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(
     : AudioProcessorEditor(&p), processorRef(p),
       webView(juce::WebBrowserComponent::Options{}.withResourceProvider(
           [this](const auto &url) { return getResource(url); }
-        )
+    ).withNativeIntegrationEnabled()
     )
 {
     juce::ignoreUnused (processorRef);
 
     addAndMakeVisible(webView);
+    addAndMakeVisible(runJavaScriptButton);
+
     webView.goToURL(webView.getResourceProviderRoot());
+
+    runJavaScriptButton.onClick = [this]() {
+        constexpr auto JAVASCRIPT_TO_RUN{"Math.random("};
+
+        webView.evaluateJavascript(
+            JAVASCRIPT_TO_RUN,
+            [](juce::WebBrowserComponent::EvaluationResult result) {
+              if (const auto* resultPtr = result.getResult()) {
+                std::cout << "evaluation result: " << resultPtr->toString() << std::endl;
+              } else {
+                std::cout << "evaluation error: " << result.getError()->message << std::endl;
+              }
+            }
+        );
+    };
+
+
     setResizable(true, true);
     setSize (200, 200);
 }
@@ -67,12 +86,14 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    webView.setBounds(getLocalBounds());
+    auto bounds = getLocalBounds();
+    webView.setBounds(bounds.removeFromRight(getWidth() / 2));
+    runJavaScriptButton.setBounds(bounds.removeFromTop(50).reduced(5));
 }
 
 auto AudioPluginAudioProcessorEditor::getResource(const juce::String& url) -> std::optional<Resource> {
     static const auto resourceFileRoot =
-        juce::File("/Users/yuichkun/workspace/my-first-juce-with-webview/plugin/src/ui/public");
+        juce::File("/Users/yuichkun/workspace/my-first-juce-with-webview/plugin/ui/public");
 
     const auto resourceToRetrieve = url == "/" ? "index.html" : url.fromFirstOccurrenceOf("/", false, false);
 
